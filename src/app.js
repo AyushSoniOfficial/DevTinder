@@ -4,13 +4,10 @@ const User = require("./models/user");
 const app = express();
 const port = 7777;
 
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "Ayush",
-    lastName: "Soni",
-    emailId: "soni@gmail.com",
-    password: "soni@123",
-  });
+  const user = new User(req.body);
 
   try {
     await user.save();
@@ -19,7 +16,6 @@ app.post("/signup", async (req, res) => {
     res
       .status(400)
       .send("Something went wrong while creating user" + err.message);
-    console.log("err_signup", err.message);
   }
 });
 
