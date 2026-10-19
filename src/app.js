@@ -1,31 +1,26 @@
 const express = require("express");
+const { connectDB } = require("./config/database");
+const User = require("./models/user");
 const app = express();
 const port = 7777;
-const { authMiddleware, usersMiddleware } = require("./middlewares");
 
-app.use("/admin", authMiddleware);
-app.use("/users", usersMiddleware);
+app.post("/signup", async (req, res) => {
+  const user = new User({
+    firstName: "Ayush",
+    lastName: "Soni",
+    emailId: "soni@gmail.com",
+    password: "soni@123",
+  });
 
-//Admin
-app.get("/admin", (req, res) => {
-  res.send("Admin Page");
-});
-app.get("/admin/dashboard", (req, res) => {
-  res.send("Admin Dashboard");
-});
-
-//Users
-app.get("/users", (req, res) => {
-  res.send("User Page");
-});
-app.get("/users/wishlist", (req, res) => {
-  res.send("Wishlist Page");
-});
-app.get("/users/faq", (req, res) => {
-  res.send("FAQ Page");
-});
-app.get("/users/settings", (req, res) => {
-  res.send("Settings Page");
+  try {
+    await user.save();
+    res.send("Data added sucessfully!");
+  } catch (err) {
+    res
+      .status(400)
+      .send("Something went wrong while creating user" + err.message);
+    console.log("err_signup", err.message);
+  }
 });
 
 //Root
@@ -33,6 +28,13 @@ app.get("/", (req, res) => {
   res.send("Hello, World from Root of the app!");
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+connectDB()
+  .then(() => {
+    console.log("DB connected sucessfully");
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log("Error while connecting to db", err.message);
+  });
