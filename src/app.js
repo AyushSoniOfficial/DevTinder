@@ -7,9 +7,8 @@ const port = 7777;
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-
   try {
+    const user = new User(req.body);
     await user.save();
     res.send("Data added sucessfully!");
   } catch (err) {
@@ -54,16 +53,41 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.patch("/user", async (req, res) => {
+app.patch("/user/:userId", async (req, res) => {
   const data = req.body;
-  const userId = req.body.userId;
+  const userId = req.params?.userId;
 
   try {
-    const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+    // 1.
+    // if (data.emailId) {
+    //   delete data.emailId;
+    // }
+
+    // 2.
+    const ALLOWED_UPDATES = [
+      "firstName",
+      "lastName",
+      "skills",
+      "about",
+      "age",
+      "imageUrl",
+      "password",
+      "gender",
+    ];
+
+    const updatesToApply = {};
+
+    for (let key of ALLOWED_UPDATES) {
+      if (data[key] !== undefined) {
+        updatesToApply[key] = data[key];
+      }
+    }
+
+    const user = await User.findByIdAndUpdate({ _id: userId }, updatesToApply, {
       returnDocument: "after",
       runValidators: true,
     });
-    console.log(user);
+
     res.send("User updated successfully!");
   } catch (err) {
     res.status(400).send("Something went wrong" + err.message);
