@@ -8,13 +8,11 @@ app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   try {
-    const user = new User(req.body);
+    const user = new User();
     await user.save();
     res.send("Data added sucessfully!");
   } catch (err) {
-    res
-      .status(400)
-      .send("Something went wrong while creating user" + err.message);
+    res.status(400).send(err.message);
   }
 });
 
