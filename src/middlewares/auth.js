@@ -1,26 +1,25 @@
-const authMiddleware = (req, res, next) => {
-  console.log("First checking token for admin");
-  const token = "xyz";
-  const isAuthorized = token === "xyz";
-  if (isAuthorized) {
-    next();
-  } else {
-    res.status(401).send("Unauthorized admin request");
-  }
-};
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-const usersMiddleware = (req, res, next) => {
-  console.log("First checking token for users");
-  const token = "xyxz";
-  const isAuthorized = token === "xyz";
-  if (isAuthorized) {
+const userAuth = async (req, res, next) => {
+  try {
+    const { token } = req.cookies;
+
+    if (!token) {
+      throw new Error("Unauthorized Token!!");
+    }
+
+    const decodedMessage = await jwt.verify(token, "$Dev@Tinder12");
+    const { _id } = decodedMessage;
+    const user = await User.findById({ _id });
+
+    req.user = user;
     next();
-  } else {
-    res.status(401).send("Unauthorized request for users");
+  } catch (err) {
+    res.status(400).send("Unable to fetch token: " + err.message);
   }
 };
 
 module.exports = {
-  authMiddleware,
-  usersMiddleware,
+  userAuth,
 };
