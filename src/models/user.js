@@ -48,11 +48,15 @@ const userSchema = new Schema(
     },
     gender: {
       type: String,
-      validate(value) {
-        if (!["male", "female", "others"].includes(value)) {
-          throw new Error("Gender is not valid, Please try again!");
-        }
+      enum: {
+        values: ["male", "female", "others"],
+        message: `{VALUE} gender is not valid, Please try again`,
       },
+      // validate(value) {
+      //   if (!["male", "female", "others"].includes(value)) {
+      //     throw new Error("Gender is not valid, Please try again!");
+      //   }
+      // },
     },
     imageUrl: {
       type: String,
@@ -97,6 +101,8 @@ userSchema.methods.validatePassword = async function (passwordInputByUser) {
 
   return isPasswordValid;
 };
+
+userSchema.index({ firstName: 1, lastName: 1 });
 
 const User = model("User", userSchema);
 
