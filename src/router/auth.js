@@ -39,7 +39,10 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordValid) {
       const token = user.getJWT();
       res.cookie("token", token);
-      res.send("Login Successful!!");
+      return res.json({
+        message: "Login Successful!",
+        data: user,
+      });
     } else {
       throw new Error("Invalid Credentials");
     }

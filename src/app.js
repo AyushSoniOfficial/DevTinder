@@ -11,7 +11,12 @@ const requestRouter = require("./router/request");
 const userRouter = require("./router/user");
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 const port = 7777;
 
 app.use(express.json());
