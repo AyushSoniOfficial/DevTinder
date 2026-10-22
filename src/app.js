@@ -1,6 +1,9 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const { connectDB } = require("./config/database");
+
+// Adds headers: Access-Control-Allow-Origin: *
 
 const authRouter = require("./router/auth");
 const profileRouter = require("./router/profile");
@@ -8,6 +11,7 @@ const requestRouter = require("./router/request");
 const userRouter = require("./router/user");
 
 const app = express();
+app.use(cors());
 const port = 7777;
 
 app.use(express.json());
